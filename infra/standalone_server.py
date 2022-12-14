@@ -35,7 +35,7 @@ def create_or_retreive_security_group():
 
 def launch_instance(security_group_id):
     instance = ec2_client.run_instances(
-        ImageId="ami-0ee23bfc74a881de5", # Ubuntu 18.04 LTS
+        ImageId="ami-0ee23bfc74a881de5",
         MinCount=1,
         MaxCount=1,
         InstanceType="t2.micro",
@@ -57,6 +57,13 @@ def launch_instance(security_group_id):
 
     return instance
 
+def display_info(instance):
+    waiter = ec2_client.get_waiter('instance_status_ok')
+    waiter.wait(InstanceIds=[instance["Instances"][0]["InstanceId"]])
+    print("Standalone server successfully launched")
+    print(instance["Instances"][0]["InstanceId"])
+    print("Standalone benchmark results are available under: /home/ubuntu/results.txt")
+
 if __name__ == "__main__":
     # create security group
     security_group = create_or_retreive_security_group()
@@ -66,7 +73,4 @@ if __name__ == "__main__":
 
     # display instance info
     print("Running...")
-    waiter = ec2_client.get_waiter('instance_status_ok')
-    waiter.wait(InstanceIds=[instance["Instances"][0]["InstanceId"]])
-    print("Standalone server successfully launched")
-    print(instance["Instances"][0]["InstanceId"])
+    display_info(instance)
