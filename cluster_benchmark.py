@@ -3,12 +3,12 @@ import boto3
 ec2_client = boto3.client("ec2", region_name="us-east-1")
 
 def read_master_user_data():
-    with open("cluster_master_setup.sh", "r") as file:
+    with open("scripts/cluster_master_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
 def read_slave_user_data():
-    with open("cluster_slave_setup.sh", "r") as file:
+    with open("scripts/cluster_slave_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 

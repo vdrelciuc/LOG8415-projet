@@ -3,7 +3,7 @@ import boto3
 ec2_client = boto3.client("ec2", region_name="us-east-1")
 
 def read_user_data():
-    with open("standalone_setup.sh", "r") as file:
+    with open("scripts/standalone_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
