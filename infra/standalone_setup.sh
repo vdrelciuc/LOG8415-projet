@@ -15,6 +15,6 @@ mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-schema.sql;"
 mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-data.sql;"
 
 # Run sysbench
-sysbench oltp_read_write --table-size=1000000 --mysql-db=sakila --db-driver=mysql --mysql-user=root prepare
-sysbench oltp_read_write --table-size=1000000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --num-threads=6 --max-time=60 --max-requests=0 run > /home/ubuntu/results.txt
-sysbench oltp_read_write --table-size=1000000 --mysql-db=sakila --db-driver=mysql --mysql-user=root cleanup
+sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root prepare
+sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --num-threads=6 --max-time=60 --max-requests=0 run > /home/ubuntu/results.txt
+sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root cleanup

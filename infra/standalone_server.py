@@ -60,8 +60,7 @@ def launch_instance(security_group_id):
 def display_info(instance):
     waiter = ec2_client.get_waiter('instance_status_ok')
     waiter.wait(InstanceIds=[instance["Instances"][0]["InstanceId"]])
-    print("Standalone server successfully launched")
-    print(instance["Instances"][0]["InstanceId"])
+    print("Done.")
     print("Standalone benchmark results are available under: /home/ubuntu/results.txt")
 
 if __name__ == "__main__":

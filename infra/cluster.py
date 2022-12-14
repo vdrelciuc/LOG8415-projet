@@ -95,14 +95,8 @@ def display_info(master, slave1, slave2, slave3):
     waiter.wait(InstanceIds=[slave1["Instances"][0]["InstanceId"]])
     waiter.wait(InstanceIds=[slave2["Instances"][0]["InstanceId"]])
     waiter.wait(InstanceIds=[slave3["Instances"][0]["InstanceId"]])
-    print("Cluster successfully launched")
-
-    print("master")
-    print(master["Instances"][0]["InstanceId"])
-    print("slaves")
-    print(slave1["Instances"][0]["InstanceId"])
-    print(slave2["Instances"][0]["InstanceId"])
-    print(slave3["Instances"][0]["InstanceId"])
+    print("Done.")
+    print("Cluster benchmark results are available on master node under: /home/ubuntu/results.txt")
 
 if __name__ == "__main__":
     # create security group
