@@ -85,13 +85,11 @@ dpkg -i mysql-server_7.6.6-1ubuntu18.04_amd64.deb
 # Configure MySQL Server
 echo "
 [mysqld]
-# Options for mysqld process:
 ndbcluster
 bind-address=0.0.0.0
 ndb-connectstring=ip-172-31-2-1.ec2.internal  # location of management server
 
 [mysql_cluster]
-# Options for NDB Cluster processes:
 ndb-connectstring=ip-172-31-2-1.ec2.internal  # location of management server
 " | tee -a /etc/mysql/my.cnf
 

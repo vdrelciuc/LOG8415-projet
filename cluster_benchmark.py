@@ -2,6 +2,8 @@ import boto3
 
 ec2_client = boto3.client("ec2", region_name="us-east-1")
 
+SUBNET_ID = 'subnet-0d4dd60cd5b5b4377' # replace with your own AWS subnet (CIDR 172.31.0.0/20)
+
 def read_master_user_data():
     with open("scripts/cluster_master_setup.sh", "r") as file:
         user_data = file.read()
@@ -74,7 +76,7 @@ def launch_instance(name, security_group_id, private_ip, user_data):
         KeyName="vockey",
         UserData=user_data,
         SecurityGroupIds=[security_group_id],
-        SubnetId='subnet-0d4dd60cd5b5b4377', # replace with your own AWS subnet (CIDR 172.31.0.0/20)
+        SubnetId=SUBNET_ID, 
         PrivateIpAddress=private_ip,
         TagSpecifications=[
         {
