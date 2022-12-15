@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MYSQL_PASSWORD=MyTemporaryRootPassword
+
 # Installing dependencies
 apt update
 apt install libaio1 libmecab2 sysbench libncurses5 libtinfo5 -y
@@ -76,8 +78,8 @@ dpkg -i mysql-cluster-community-client_7.6.6-1ubuntu18.04_amd64.deb
 dpkg -i mysql-client_7.6.6-1ubuntu18.04_amd64.deb
 
 # Pre-allocate root password (blank) so that we can install MySQL Cluster Community Server non-interactively
-debconf-set-selections <<< 'mysql-cluster-community-server_7.6.6 mysql-cluster-community-server/root-pass password'
-debconf-set-selections <<< 'mysql-cluster-community-server_7.6.6 mysql-cluster-community-server/re-root-pass password'
+debconf-set-selections <<< 'mysql-cluster-community-server_7.6.6 mysql-cluster-community-server/root-pass password MyTemporaryRootPassword'
+debconf-set-selections <<< 'mysql-cluster-community-server_7.6.6 mysql-cluster-community-server/re-root-pass password MyTemporaryRootPassword'
 
 dpkg -i mysql-cluster-community-server_7.6.6-1ubuntu18.04_amd64.deb
 dpkg -i mysql-server_7.6.6-1ubuntu18.04_amd64.deb
@@ -101,10 +103,10 @@ systemctl enable mysql
 cd /home/ubuntu
 wget https://downloads.mysql.com/docs/sakila-db.tar.gz -O /home/ubuntu/sakila-db.tar.gz
 tar -xvf /home/ubuntu/sakila-db.tar.gz -C /home/ubuntu/
-mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-schema.sql;"
-mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-data.sql;"
+mysql -u root -p$MYSQL_PASSWORD -e "SOURCE /home/ubuntu/sakila-db/sakila-schema.sql;"
+mysql -u root -p$MYSQL_PASSWORD -e "SOURCE /home/ubuntu/sakila-db/sakila-data.sql;"
 
 # Run sysbench
-sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql_storage_engine=ndbcluster prepare
-sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql_storage_engine=ndbcluster --num-threads=6 --max-time=60 --max-requests=0 run > /home/ubuntu/results.txt
-sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql_storage_engine=ndbcluster cleanup
+sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql-password=$MYSQL_PASSWORD --mysql_storage_engine=ndbcluster prepare
+sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql-password=$MYSQL_PASSWORD --mysql_storage_engine=ndbcluster --num-threads=6 --max-time=60 --max-requests=0 run > /home/ubuntu/results.txt
+sudo sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --mysql-password=$MYSQL_PASSWORD --mysql_storage_engine=ndbcluster cleanup

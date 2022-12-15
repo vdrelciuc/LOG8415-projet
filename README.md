@@ -10,7 +10,7 @@ Before using this project, make sure to follow the following steps:
 2. Install project dependencies using `pip install boto3`
 3. Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 4. Configure your AWS Access Key using `aws configure`
-5. Replace `SUBNET_ID` in `cluster_benchmark.py` with your own AWS Subnet (select one with CIDR 172.31.0.0/20)
+5. Replace `SUBNET_ID` in `cluster_benchmark.py` and `proxy_deploy.py` with your own AWS Subnet (select one with CIDR 172.31.0.0/20)
 
 ## Usage
 
