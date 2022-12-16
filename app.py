@@ -1,6 +1,8 @@
-import sys
+import random
 import pymysql
+import sys
 
+from pythonping import ping
 from sshtunnel import SSHTunnelForwarder
 
 SSH_PORT = 22
@@ -27,40 +29,52 @@ def query_mysql(host, port, query):
     print(output)
     connection.close()
 
-def open_worker_tunnel(master_ip, worker_ip):
+def open_tunnel_to_master():
     tunnel = SSHTunnelForwarder(
-        (worker_ip, SSH_PORT),
-        ssh_username = "ubuntu",
-        ssh_pkey="key.pem",
-        remote_bind_address = (master_ip, MYSQL_PORT)
-    )
-    tunnel.start()
-    return tunnel
-
-def direct_hit(query):
-    print("Direct hit")
-
-    server = SSHTunnelForwarder(
         HOSTNAMES["master"],
         ssh_username="ubuntu",
         ssh_pkey="key.pem",
         local_bind_address=('127.0.0.1', MYSQL_PORT),
         remote_bind_address=('127.0.0.1', MYSQL_PORT)
     )
+    tunnel.start()
+    return tunnel
 
-    server.start()
+def direct_hit(query):
+    print("Direct hit strategy was selected.")
+    print("We are now connecting to the master node.")
 
+    tunnel = open_tunnel_to_master()
     query_mysql('127.0.0.1', MYSQL_PORT, query)
+    tunnel.close()
 
-    server.close()
+def random_hit(query):
+    print("Random hit strategy was selected.")
+    rand = random.randint(1, 3)
+    rand_worker = "worker" + str(rand)
+    print("We are now randomly connecting to data node {}.".format(rand_worker))
+    tunnel = open_tunnel_to_master()
+    query_mysql(HOSTNAMES[rand_worker], tunnel.local_bind_port, query)
+    tunnel.close()
 
-def random():
-    print("Random")
-    #if ssh_tunnel != None:
-    #    ssh_tunnel.stop()
+def get_lowest_ping_instance():
+    best_instance = HOSTNAMES["master"]
+    lowest_latency_in_ms = 1000
+    for key in HOSTNAMES:
+        ping_result = ping(HOSTNAMES[key], count=1, timeout=2)
+        if ping_result.packet_loss != 1 and ping_result.rtt_avg_ms < lowest_latency_in_ms:
+            best_instance = HOSTNAMES[key]
+            lowest_latency_in_ms = ping_result.rtt_avg_ms
+    return best_instance
 
-def custom():
-    print("Custom")
+def custom_hit(query):
+    print("Custom hit strategy was selected.")
+    best_instance_hostname = get_lowest_ping_instance()
+    best_instance_name = list(HOSTNAMES.keys())[list(HOSTNAMES.values()).index(best_instance_hostname)]
+    print("We are now connecting to the data node with the lowest ping: {}".format(best_instance_name))
+    tunnel = open_tunnel_to_master()
+    query_mysql(HOSTNAMES[best_instance_name], tunnel.local_bind_port, query)
+    tunnel.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -77,9 +91,9 @@ if __name__ == "__main__":
         if strategy.lower() == "direct":
             direct_hit(query)
         elif strategy.lower() == "random":
-            random(query)
+            random_hit(query)
         elif strategy.lower() == "custom":
-            custom(query)
+            custom_hit(query)
         else:
             print("[Error] Invalid strategy. Possible values are: direct, random or custom")
             exit(-1)

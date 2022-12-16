@@ -2,4 +2,4 @@
 
 apt update -y
 apt install python3 python3-pip -y
-pip install pymysql sshtunnel
+pip install pymysql sshtunnel pythonping
