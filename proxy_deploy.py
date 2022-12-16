@@ -5,11 +5,13 @@ ec2_client = boto3.client("ec2", region_name="us-east-1")
 SUBNET_ID = 'subnet-0d4dd60cd5b5b4377' # replace with your own AWS subnet (CIDR 172.31.0.0/20)
 
 def read_proxy_user_data():
+    # Read user data script for Proxy
     with open("scripts/proxy_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
 def create_or_retreive_security_group():
+    # Function to retreive an existing security group or to create it if it doesn't exist
     existing_security_group = ec2_client.describe_security_groups(
         Filters=[
             dict(Name='group-name', Values=['cluster-security-group'])
@@ -63,6 +65,7 @@ def create_or_retreive_security_group():
     return security_group
 
 def launch_instance(name, security_group_id, private_ip, user_data):
+    # Launch an EC2 instance
     return ec2_client.run_instances(
         ImageId="ami-0a6b2839d44d781b2",
         MinCount=1,
@@ -87,10 +90,11 @@ def launch_instance(name, security_group_id, private_ip, user_data):
     )
 
 def display_info(instance):
+    # Display script completion information after the instances are done being created
     waiter = ec2_client.get_waiter('instance_status_ok')
     waiter.wait(InstanceIds=[instance["Instances"][0]["InstanceId"]])
     print("Done.")
-    print("Proxy app is available here: /home/ubuntu/proxy_run.py")
+    print("Proxy app is available here: /home/ubuntu/LOG8415-projet/app.py")
 
 if __name__ == "__main__":
     # create security group

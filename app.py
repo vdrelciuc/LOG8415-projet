@@ -15,6 +15,7 @@ HOSTNAMES = {
 }
 
 def query_mysql(host, port, query):
+    # Function to query a MySQL Server
     connection = pymysql.connect(
         host = host,
         user="root",
@@ -30,6 +31,7 @@ def query_mysql(host, port, query):
     connection.close()
 
 def open_tunnel_to_master():
+    # Function to create an SSH tunnel to the Master Node
     tunnel = SSHTunnelForwarder(
         HOSTNAMES["master"],
         ssh_username="ubuntu",
@@ -41,6 +43,7 @@ def open_tunnel_to_master():
     return tunnel
 
 def direct_hit(query):
+    # Function to perform a Direct Hit proxy strategy
     print("Direct hit strategy was selected.")
     print("We are now connecting to the master node.")
 
@@ -49,6 +52,7 @@ def direct_hit(query):
     tunnel.close()
 
 def random_hit(query):
+    # Function to perform a Random Hit proxy strategy
     print("Random hit strategy was selected.")
     rand = random.randint(1, 3)
     rand_worker = "worker" + str(rand)
@@ -58,6 +62,7 @@ def random_hit(query):
     tunnel.close()
 
 def get_lowest_ping_instance():
+    # Function to retreive the hostname of the instance with the lowest average ping
     best_instance = HOSTNAMES["master"]
     lowest_latency_in_ms = 1000
     for key in HOSTNAMES:
@@ -68,6 +73,7 @@ def get_lowest_ping_instance():
     return best_instance
 
 def custom_hit(query):
+    # Function to perform a Custom Hit proxy strategy
     print("Custom hit strategy was selected.")
     best_instance_hostname = get_lowest_ping_instance()
     best_instance_name = list(HOSTNAMES.keys())[list(HOSTNAMES.values()).index(best_instance_hostname)]

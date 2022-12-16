@@ -14,7 +14,9 @@ tar -xvf /home/ubuntu/sakila-db.tar.gz -C /home/ubuntu/
 mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-schema.sql;"
 mysql -u root -e "SOURCE /home/ubuntu/sakila-db/sakila-data.sql;"
 
-# Run sysbench
+# Run sysbench (read-write test, 100k items, 6 threads, 60 sec)
 sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root prepare
 sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root --num-threads=6 --max-time=60 --max-requests=0 run > /home/ubuntu/results.txt
 sysbench oltp_read_write --table-size=100000 --mysql-db=sakila --db-driver=mysql --mysql-user=root cleanup
+
+# Benchmark results are saved under: /home/ubuntu/results.txt

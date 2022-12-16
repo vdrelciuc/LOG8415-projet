@@ -34,14 +34,17 @@ If you haven't already done so, start by creating the MySQL Cluster by running `
 
 To create the Proxy instance, simply run `python proxy_deploy.py`
 
-Once the entire infrastructure has been deployed, SSH into your Proxy instance. From there, you can run the following proxy strategies:
-- Direct Hit: `python /home/ubuntu/proxy_run.py -direct`
-- Random: `python /home/ubuntu/proxy_run.py -random`
-- Customized: `python /home/ubuntu/proxy_run.py -custom`
+Once the entire infrastructure has been deployed, copy the SSH private key that you used to create the cluster EC2 instances (by default: vockey.pem) from your local machine to the Proxy: `scp -i /local/path/to/vockey.pem ubuntu@<PROXY_PUBLIC_IP>:/home/ubuntu/LOG8415-projet/key.pem`
 
-If no option is specifyed when calling `proxy_run.py`, it will default to the Direct Hit strategy.
+Then, SSH into the Proxy instance.
+
+From there, you can run the following proxy strategies:
+- Direct Hit: `python3 /home/ubuntu/LOG8415-projet/app.py direct [sql_query_between_double_quotes]`
+- Random: `python3 /home/ubuntu/LOG8415-projet/app.py random [sql_query_between_double_quotes]`
+- Custom: `python3 /home/ubuntu/LOG8415-projet/app.py custom [sql_query_between_double_quotes]`
 
 Note: 
-- The Direct Hit strategy will launch 2 SQL queries (1 INSERT + 1 SELECT), both targeted at the master node. 
-- The Customized strategy will also launch 2 SQL queries (1 INSERT + 1 SELECT). The INSERT will automatically be targeted at the master node, as it's the only node that supports writing data, while the SELECT will be targeted to the instance with the lowest response time (master or worker). 
-- The Random strategy will launch a single SQL query (1 SELECT), targeted only at a random worker.
+- The Direct Hit strategy will always target the master node. 
+- The Random strategy will always target a random worker node.
+- The Custom strategy will target the node with the lowest average ping (can be either the master or one of the workers).
+- The Proxy will scan the SQL query for a "SELECT" statement, indicator of a read-only request. If no "SELECT" statement is found, the app will automatically shift to a Direct Hit strategy, as write requests (INSERT, DELETE, ALTER, etc.) can only be processed by the master node.

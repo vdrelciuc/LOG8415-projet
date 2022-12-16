@@ -3,11 +3,13 @@ import boto3
 ec2_client = boto3.client("ec2", region_name="us-east-1")
 
 def read_user_data():
+    # Read user data script for the Standalone MySQL Server
     with open("scripts/standalone_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
 def create_or_retreive_security_group():
+    # Function to retreive an existing security group or to create it if it doesn't exist
     existing_security_group = ec2_client.describe_security_groups(
         Filters=[
             dict(Name='group-name', Values=['standalone-security-group'])
@@ -34,6 +36,7 @@ def create_or_retreive_security_group():
     return security_group
 
 def launch_instance(security_group_id):
+    # Launch an EC2 instance
     instance = ec2_client.run_instances(
         ImageId="ami-0ee23bfc74a881de5",
         MinCount=1,
@@ -58,6 +61,7 @@ def launch_instance(security_group_id):
     return instance
 
 def display_info(instance):
+    # Display script completion information after the instances are done being created
     waiter = ec2_client.get_waiter('instance_status_ok')
     waiter.wait(InstanceIds=[instance["Instances"][0]["InstanceId"]])
     print("Done.")

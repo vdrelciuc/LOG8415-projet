@@ -5,16 +5,19 @@ ec2_client = boto3.client("ec2", region_name="us-east-1")
 SUBNET_ID = 'subnet-0d4dd60cd5b5b4377' # replace with your own AWS subnet (CIDR 172.31.0.0/20)
 
 def read_master_user_data():
+    # Read user data script for Cluster Master node
     with open("scripts/cluster_master_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
 def read_slave_user_data():
+    # Read user data script for Cluster Data node
     with open("scripts/cluster_worker_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
 def create_or_retreive_security_group():
+    # Function to retreive an existing security group or to create it if it doesn't exist
     existing_security_group = ec2_client.describe_security_groups(
         Filters=[
             dict(Name='group-name', Values=['cluster-security-group'])
@@ -68,6 +71,7 @@ def create_or_retreive_security_group():
     return security_group
 
 def launch_instance(name, security_group_id, private_ip, user_data):
+    # Launch an EC2 instance
     return ec2_client.run_instances(
         ImageId="ami-0a6b2839d44d781b2",
         MinCount=1,
@@ -92,6 +96,7 @@ def launch_instance(name, security_group_id, private_ip, user_data):
     )
 
 def display_info(master, slave1, slave2, slave3):
+    # Display script completion information after the instances are done being created
     waiter = ec2_client.get_waiter('instance_status_ok')
     waiter.wait(InstanceIds=[master["Instances"][0]["InstanceId"]])
     waiter.wait(InstanceIds=[slave1["Instances"][0]["InstanceId"]])
