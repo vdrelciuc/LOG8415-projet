@@ -25,17 +25,17 @@ datadir=/var/lib/mysql-cluster
 NodeId=1
 
 [ndbd]
-hostname=ip-172-31-2-2.ec2.internal # Hostname of slave1
+hostname=ip-172-31-2-2.ec2.internal # Hostname of worker1
 NodeId=2
 datadir=/usr/local/mysql/data
 
 [ndbd]
-hostname=ip-172-31-2-3.ec2.internal # Hostname of slave2
+hostname=ip-172-31-2-3.ec2.internal # Hostname of worker2
 NodeId=3
 datadir=/usr/local/mysql/data
 
 [ndbd]
-hostname=ip-172-31-2-4.ec2.internal # Hostname of slave3
+hostname=ip-172-31-2-4.ec2.internal # Hostname of worker3
 NodeId=4
 datadir=/usr/local/mysql/data
 

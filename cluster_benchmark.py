@@ -10,7 +10,7 @@ def read_master_user_data():
     return user_data
 
 def read_slave_user_data():
-    with open("scripts/cluster_slave_setup.sh", "r") as file:
+    with open("scripts/cluster_worker_setup.sh", "r") as file:
         user_data = file.read()
     return user_data
 
